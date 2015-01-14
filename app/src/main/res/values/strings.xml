@@ -5,6 +5,7 @@
     <string name="voice_trigger">Ticket Aid</string>
     <string name="title_activity_welcome">Welcome</string>
     <string name="welcome">Welcome to Ticket Aid!</string>
+    <string name="tap_to_continue">"Tap to continue"</string>
     <string name="title_activity_location">Location</string>
     <string name="current_location">Current Location</string>
     <string name="destination_location">Destination</string>
@@ -16,12 +17,13 @@
     <string name="step1">Purchasing Step 1</string>
     <string name="step2">Purchasing Step 2</string>
     <string name="step3">Purchasing Step 3</string>
-    <string name="get_ticket">Please pick up your ticket</string>
+    <string name="get_ticket">Single Ticket only valid for 3 hours. Must be stamped before starting the journey.</string>
     <string name="title_activity_machine">Ticket Machine</string>
     <string name="find_machine">Please find this machine</string>
     <string name="title_activity_ticket">Ticket</string>
     <string name="validate_ticket">Please validate your ticket</string>
     <string name="go_back">Tap to go back</string>
+    <string name="tap_to_purchase">tap when standing in front</string>
 
 
 </resources>

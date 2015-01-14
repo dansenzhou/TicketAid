@@ -4,15 +4,22 @@ import com.google.android.glass.media.Sounds;
 import com.google.android.glass.widget.CardBuilder;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
+import com.google.android.glass.app.Card;
+import com.google.android.glass.view.WindowUtils;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import de.tum.in.vfit.ticketaid.R;
 
@@ -41,6 +48,8 @@ public class MachineActivity extends Activity {
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().requestFeature(WindowUtils.FEATURE_VOICE_COMMANDS);
 
         mView = buildView();
 
@@ -76,7 +85,8 @@ public class MachineActivity extends Activity {
                 // Plays disallowed sound to indicate that TAP actions are not supported.
                 AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                 am.playSoundEffect(Sounds.DISALLOWED);
-                startActivity(new Intent(MachineActivity.this, PurchaseActivity.class));
+                openOptionsMenu();
+
             }
         });
         setContentView(mCardScroller);
@@ -93,14 +103,51 @@ public class MachineActivity extends Activity {
         mCardScroller.deactivate();
         super.onPause();
     }
+    @Override
+    public boolean onCreatePanelMenu(int featureId, Menu menu){
+        if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS || featureId ==  Window.FEATURE_OPTIONS_PANEL) {
+            getMenuInflater().inflate(R.menu.menu_location, menu);
+            return true;
+        }
+        return super.onCreatePanelMenu(featureId, menu);
+    }
+
+    @Override
+    public boolean onPreparePanel(int featureId, View view, Menu menu) {
+        if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS) {
+            // Dynamically decides between enabling/disabling voice menu.
+            return true;
+        }
+        // Good practice to pass through, for options menu.
+        return super.onPreparePanel(featureId, view, menu);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS || featureId ==  Window.FEATURE_OPTIONS_PANEL ) {
+            switch (item.getItemId()) {
+                case R.id.one_way:
+                    startActivity(new Intent(MachineActivity.this, PurchaseActivity.class));
+                    break;
+                case R.id.round_trip:
+                    Toast.makeText(getApplicationContext(), "Message", Toast.LENGTH_LONG).show();
+                    break;
+            }
+            return true;
+        }
+        return super.onMenuItemSelected(featureId, item);
+    }
 
     /**
      * Builds a Glass styled "Hello World!" view using the {@link CardBuilder} class.
      */
     private View buildView() {
-        CardBuilder card = new CardBuilder(this, CardBuilder.Layout.TEXT);
-
+        //CardBuilder card = new CardBuilder(this, CardBuilder.Layout.TEXT);
+        Card card = new Card(this);
+        card.setImageLayout(Card.ImageLayout.LEFT);
         card.setText(R.string.find_machine);
+        card.addImage(R.drawable.machine);
+        card.setTimestamp(R.string.tap_to_purchase);
         return card.getView();
     }
 

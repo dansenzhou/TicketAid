@@ -4,6 +4,7 @@ import com.google.android.glass.media.Sounds;
 import com.google.android.glass.widget.CardBuilder;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
+import com.google.android.glass.app.Card;
 
 import android.app.Activity;
 import android.content.Context;
@@ -99,9 +100,12 @@ public class WelcomeActivity extends Activity {
      * Builds a Glass styled "Hello World!" view using the {@link CardBuilder} class.
      */
     private View buildView() {
-        CardBuilder card = new CardBuilder(this, CardBuilder.Layout.TEXT);
+        Card card = new Card(this);
 
+        card.setImageLayout(Card.ImageLayout.LEFT);
         card.setText(R.string.welcome);
+        card.addImage(R.drawable.logo_mvg);
+        card.setTimestamp(R.string.tap_to_continue);
         return card.getView();
     }
 
