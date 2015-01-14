@@ -9,7 +9,12 @@ import com.google.android.glass.widget.CardScrollView;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.AudioManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +23,24 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.ByteArrayBuffer;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 import de.tum.in.vfit.ticketaid.R;
 
@@ -32,7 +54,15 @@ import de.tum.in.vfit.ticketaid.R;
  *
  * @see <a href="https://developers.google.com/glass/develop/gdk/touch">GDK Developer Guide</a>
  */
-public class LocationActivity extends Activity {
+public class LocationActivity extends Activity implements LocationListener {
+
+    final String GOOGLE_KEY = "AIzaSyB8K9fWbYqlwwzYDZ7T33-UWH6nL8GcLIE";
+
+    private LocationManager mLocationManager;
+    private Location mLastKnownLocation;
+    private CardBuilder card;
+
+    String currentStation = "Fail to locate";
 
     /**
      * {@link CardScrollView} to use as the main content view.
@@ -47,6 +77,8 @@ public class LocationActivity extends Activity {
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+        mLastKnownLocation = getLastLocation(this);
+
         mView = buildView();
 
         mCardScroller = new CardScrollView(this);
@@ -105,11 +137,157 @@ public class LocationActivity extends Activity {
      * Builds a Glass styled "Hello World!" view using the {@link CardBuilder} class.
      */
     private View buildView() {
-        CardBuilder card = new CardBuilder(this, CardBuilder.Layout.TEXT);
+        card = new CardBuilder(this, CardBuilder.Layout.TEXT);
+        if (mLastKnownLocation != null) {
+            // Do something with location
+            System.out.println(mLastKnownLocation.getLongitude());
+            System.out.println(mLastKnownLocation.getLatitude());
 
-        card.setText(R.string.current_location);
+            new GooglePlacesAPI(mLastKnownLocation).execute();
+            card.setText(getString(R.string.current_location) + String.valueOf(mLastKnownLocation.getLongitude()));
+        } else {
+            // All providers returned null - start a LocationListener to force a refresh of location
+            // currently not used
+//            mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//            List<String> providers = mLocationManager.getProviders(true);
+//            for (Iterator<String> i = providers.iterator(); i.hasNext(); ) {
+//                mLocationManager.requestLocationUpdates(i.next(), 0, 0, this);
+//            }
+            card.setText(getString(R.string.current_location) + currentStation);
+        }
+
+        //card.setText(R.string.current_location );
         return card.getView();
     }
 
+    public static Location getLastLocation(Context context) {
+        LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.NO_REQUIREMENT);
+        List<String> providers = manager.getProviders(criteria, true);
+        List<Location> locations = new ArrayList<Location>();
+        for (String provider : providers) {
+            Location location = manager.getLastKnownLocation(provider);
+            if (location != null && location.getAccuracy()!=0.0) {
+                locations.add(location);
+            }
+        }
+        Collections.sort(locations, new Comparator<Location>() {
+            @Override
+            public int compare(Location location, Location location2) {
+                return (int) (location.getAccuracy() - location2.getAccuracy());
+            }
+        });
+        if (locations.size() > 0) {
+            return locations.get(0);
+        }
+        return null;
+    }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        if (mLastKnownLocation == null) {
+            // At least one location should be available now
+            // Use Destil's answer to get last known location again, using all providers
+            mLastKnownLocation = getLastLocation(this);
+
+            if (mLastKnownLocation == null) {
+                // This shouldn't happen if LocationManager is saving locations correctly, but if it does, use the location that was just passed in
+                mLastKnownLocation = location;
+            }
+            // Stop listening for updates
+            mLocationManager.removeUpdates(this);
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+    }
+
+    private class GooglePlacesAPI extends AsyncTask {
+
+        String temp;
+        Location currentLocation;
+
+        public GooglePlacesAPI(Location location) {
+            this.currentLocation = location;
+        }
+        @Override
+        protected Object doInBackground(Object[] params) {
+            // make Call to the url
+            // api :https://maps.googleapis.com/maps/api/place/search/json?types=subway_station&location=48.2008972,11.6060839&rankby=distance&key=????
+            //temp = makeCall("https://maps.googleapis.com/maps/api/place/search/json?types=subway_station&location=" + currentLocation.getLatitude() + "," + currentLocation.getLongitude() + "&rankby=distance&key=" + GOOGLE_KEY);
+            temp = makeCall("https://maps.googleapis.com/maps/api/place/search/json?types=subway_station&location=48.2008972,11.6060839&rankby=distance&key=" + GOOGLE_KEY);
+
+            //print the call in the console
+            return "";
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // we can start a progress bar here
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            if (temp != null) {
+                // all things went right
+                // parse Google places search result
+                currentStation = parseGoogleParse(temp);
+            }
+        }
+    }
+
+    public static String makeCall(String url) {
+        // string buffers the url
+        StringBuffer buffer_string = new StringBuffer(url);
+        String replyString = "";
+        // instanciate an HttpClient
+        HttpClient httpclient = new DefaultHttpClient();
+        // instanciate an HttpGet
+        HttpGet httpget = new HttpGet(buffer_string.toString());
+        try {
+            // get the responce of the httpclient execution of the url
+            HttpResponse response = httpclient.execute(httpget);
+            InputStream is = response.getEntity().getContent();
+            // buffer input stream the result
+            BufferedInputStream bis = new BufferedInputStream(is);
+            ByteArrayBuffer baf = new ByteArrayBuffer(20);
+            int current = 0;
+            while ((current = bis.read()) != -1) {
+                baf.append((byte) current);
+            }
+            // the result as a string is ready for parsing
+            replyString = new String(baf.toByteArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(replyString);
+        // trim the whitespaces
+        return replyString.trim();
+    }
+    private static String parseGoogleParse(final String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            // make an jsonObject in order to parse the response
+            System.out.println(jsonObject);
+            if (jsonObject.has("results")) {
+                JSONArray jsonArray = jsonObject.getJSONArray("results");
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Fail to locate";
+        }
+        return "";
+    }
 }
+
