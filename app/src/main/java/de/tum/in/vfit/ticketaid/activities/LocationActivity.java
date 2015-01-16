@@ -113,7 +113,7 @@ public class LocationActivity extends Activity implements LocationListener {
                 // Plays disallowed sound to indicate that TAP actions are not supported.
                 AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                 am.playSoundEffect(Sounds.TAP);
-                startActivity(new Intent(LocationActivity.this, MachineActivity.class));
+                startActivity(new Intent(LocationActivity.this, DestinationActivity.class));
             }
         });
 
