@@ -1,8 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.tum.in.vfit.ticketaid.activities.LocationActivity">
-    <item android:id="@+id/one_way"
-        android:title="@string/one_way" />
-    <item android:id="@+id/round_trip"
-        android:title="@string/round_trip" />
+    <item android:id="@+id/single"
+        android:title="@string/single" />
+    <item android:id="@+id/strip"
+        android:title="@string/strip" />
+    <item android:id="@+id/day"
+        android:title="@string/day" />
+    <item android:id="@+id/bayern"
+        android:title="@string/bayern" />
 </menu>

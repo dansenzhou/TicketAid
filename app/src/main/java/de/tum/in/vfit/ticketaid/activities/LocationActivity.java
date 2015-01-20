@@ -140,11 +140,16 @@ public class LocationActivity extends Activity implements LocationListener {
         card = new CardBuilder(this, CardBuilder.Layout.TEXT);
         if (mLastKnownLocation != null) {
             // Do something with location
-            System.out.println(mLastKnownLocation.getLongitude());
-            System.out.println(mLastKnownLocation.getLatitude());
+//            System.out.println(mLastKnownLocation.getLongitude());
+//            System.out.println(mLastKnownLocation.getLatitude());
 
-            new GooglePlacesAPI(mLastKnownLocation).execute();
-            card.setText(getString(R.string.current_location) + String.valueOf(mLastKnownLocation.getLongitude()));
+        	//dummy
+            String hard_code = " the Munich Central Station";
+            
+//            new GooglePlacesAPI(mLastKnownLocation).execute();
+            card.setText(getString(R.string.current_location) + hard_code);
+//            card.setText(getString(R.string.current_location) + String.valueOf(mLastKnownLocation.getLongitude()));
+        
         } else {
             // All providers returned null - start a LocationListener to force a refresh of location
             // currently not used
@@ -153,7 +158,9 @@ public class LocationActivity extends Activity implements LocationListener {
 //            for (Iterator<String> i = providers.iterator(); i.hasNext(); ) {
 //                mLocationManager.requestLocationUpdates(i.next(), 0, 0, this);
 //            }
-            card.setText(getString(R.string.current_location) + currentStation);
+//            card.setText(getString(R.string.current_location) + currentStation);
+        	String hard_code = " the Munich Central Station";
+        	card.setText(getString(R.string.current_location) + hard_code);
         }
 
         //card.setText(R.string.current_location );

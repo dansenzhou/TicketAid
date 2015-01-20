@@ -126,10 +126,16 @@ public class MachineActivity extends Activity {
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS || featureId ==  Window.FEATURE_OPTIONS_PANEL ) {
             switch (item.getItemId()) {
-                case R.id.one_way:
+                case R.id.single:
                     startActivity(new Intent(MachineActivity.this, PurchaseActivity.class));
                     break;
-                case R.id.round_trip:
+                case R.id.strip:
+                    Toast.makeText(getApplicationContext(), "Message", Toast.LENGTH_LONG).show();
+                    break;
+                case R.id.day:
+                    Toast.makeText(getApplicationContext(), "Message", Toast.LENGTH_LONG).show();
+                    break;
+                case R.id.bayern:
                     Toast.makeText(getApplicationContext(), "Message", Toast.LENGTH_LONG).show();
                     break;
             }
