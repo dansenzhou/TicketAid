@@ -132,9 +132,9 @@ public class MachineActivity extends Activity {
                 case R.id.strip:
                     Toast.makeText(getApplicationContext(), "Message", Toast.LENGTH_LONG).show();
                     break;
-                case R.id.day:
-                    Toast.makeText(getApplicationContext(), "Message", Toast.LENGTH_LONG).show();
-                    break;
+//                case R.id.day:
+//                    Toast.makeText(getApplicationContext(), "Message", Toast.LENGTH_LONG).show();
+//                    break;
                 case R.id.bayern:
                     Toast.makeText(getApplicationContext(), "Message", Toast.LENGTH_LONG).show();
                     break;

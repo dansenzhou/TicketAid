@@ -89,7 +89,7 @@ public class PurchaseActivity extends Activity {
                 .addImage(R.drawable.step_4));
         cards.add(4, new CardBuilder(context, CardBuilder.Layout.TEXT)
                 .setText(R.string.get_ticket)             
-                .addImage(R.drawable.entwerten);
+                .addImage(R.drawable.entwerten)
                 .setFootnote("Swipe down to quit."));
         return cards;
     }

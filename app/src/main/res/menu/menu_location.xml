@@ -2,11 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.tum.in.vfit.ticketaid.activities.LocationActivity">
     <item android:id="@+id/single"
-        android:title="@string/single" />
+        android:title="@string/single_ticket" />
     <item android:id="@+id/strip"
         android:title="@string/strip" />
-    <item android:id="@+id/day"
-        android:title="@string/day" />
+
     <item android:id="@+id/bayern"
         android:title="@string/bayern" />
 </menu>

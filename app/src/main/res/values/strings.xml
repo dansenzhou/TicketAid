@@ -10,7 +10,7 @@
     <string name="current_location">Your current location is </string>
     <string name="destination_location">What is your destination?</string>
     <string name="action_settings">Settings</string>
-    <string name="single">Single ticket</string>
+    <string name="single_ticket">Single ticket</string>
     <string name="strip">Strip ticket</string>
     <string name="day">Day ticket</string>
     <string name="bayern">Bayern ticket</string>
