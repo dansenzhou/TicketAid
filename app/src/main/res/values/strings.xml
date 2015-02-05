@@ -27,5 +27,6 @@
     <string name="go_back">Tap to go back</string>
     <string name="tap_to_purchase">tap when standing in front</string>
     <string name="title_activity_destination">Destination</string>
+    <string name="description_ticket">Single Ticket \n Valid for 3 hours \n Must be stamped before starting the journey.</string>
 
 </resources>

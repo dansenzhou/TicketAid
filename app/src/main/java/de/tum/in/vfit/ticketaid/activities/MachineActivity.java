@@ -127,7 +127,7 @@ public class MachineActivity extends Activity {
         if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS || featureId ==  Window.FEATURE_OPTIONS_PANEL ) {
             switch (item.getItemId()) {
                 case R.id.single:
-                    startActivity(new Intent(MachineActivity.this, PurchaseActivity.class));
+                    startActivity(new Intent(MachineActivity.this, DescriptionActivity.class));
                     break;
                 case R.id.strip:
                     Toast.makeText(getApplicationContext(), "Message", Toast.LENGTH_LONG).show();
