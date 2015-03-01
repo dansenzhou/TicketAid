@@ -101,7 +101,7 @@ public class DescriptionActivity extends Activity {
         CardBuilder card = new CardBuilder(this, CardBuilder.Layout.TEXT);
 
         card.setText(R.string.description_ticket);
-        card.setFootnote(R.string.tap_to_continue);
+        card.setTimestamp(R.string.tap_to_continue);
         return card.getView();
     }
 

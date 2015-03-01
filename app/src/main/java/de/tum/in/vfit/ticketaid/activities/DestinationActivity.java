@@ -1,6 +1,7 @@
 package de.tum.in.vfit.ticketaid.activities;
 
 import com.google.android.glass.media.Sounds;
+import com.google.android.glass.view.WindowUtils;
 import com.google.android.glass.widget.CardBuilder;
 import com.google.android.glass.widget.CardScrollAdapter;
 import com.google.android.glass.widget.CardScrollView;
@@ -10,11 +11,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Toast;
+
+import java.util.List;
 
 import de.tum.in.vfit.ticketaid.R;
+import de.tum.in.vfit.ticketaid.config.AppState;
 
 /**
  * An {@link Activity} showing a tuggable "Hello World!" card.
@@ -38,6 +48,12 @@ public class DestinationActivity extends Activity {
      */
     private View mView;
 
+    private CardBuilder card;
+    private CardScrollAdapter adapter;
+    private Boolean inputFlag = true;
+    private String []destinations = {"Marienplatz", "Garching", "Olympiaeinkauf"};
+    private int index = -1;
+
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -45,7 +61,7 @@ public class DestinationActivity extends Activity {
         mView = buildView();
 
         mCardScroller = new CardScrollView(this);
-        mCardScroller.setAdapter(new CardScrollAdapter() {
+        mCardScroller.setAdapter(adapter = new CardScrollAdapter() {
             @Override
             public int getCount() {
                 return 1;
@@ -76,7 +92,12 @@ public class DestinationActivity extends Activity {
                 // Plays disallowed sound to indicate that TAP actions are not supported.
                 AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                 am.playSoundEffect(Sounds.TAP);
-                startActivity(new Intent(DestinationActivity.this, MachineActivity.class));
+                //startActivity(new Intent(DestinationActivity.this, MachineActivity.class));
+                if(inputFlag){
+                    openOptionsMenu();
+                }else{
+                    displaySpeechRecognizer();
+                }
             }
         });
         setContentView(mCardScroller);
@@ -98,10 +119,74 @@ public class DestinationActivity extends Activity {
      * Builds a Glass styled "Hello World!" view using the {@link CardBuilder} class.
      */
     private View buildView() {
-        CardBuilder card = new CardBuilder(this, CardBuilder.Layout.TEXT);
+        card = new CardBuilder(this, CardBuilder.Layout.TEXT);
 
-        card.setText(R.string.destination_location);
+        card.setText(getString(R.string.destination_location) + " " + destinations[++index%3]);
+        card.setTimestamp(R.string.tap_to_continue);
         return card.getView();
     }
 
+    private static final int SPEECH_REQUEST = 0;
+
+    private void displaySpeechRecognizer() {
+//        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+//        startActivityForResult(intent, SPEECH_REQUEST);
+        card.setText(getString(R.string.destination_location) + " " + destinations[++index%3]);
+        card.setTimestamp(R.string.tap_to_continue);
+        mView = card.getView();
+        adapter.notifyDataSetChanged();
+    }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode,
+//                                    Intent data) {
+//        if (requestCode == SPEECH_REQUEST && resultCode == RESULT_OK) {
+//            List<String> results = data.getStringArrayListExtra(
+//                    RecognizerIntent.EXTRA_RESULTS);
+//            String spokenText = results.get(0);
+//            // Do something with spokenText.
+//            Log.i("Location Activity", spokenText);
+//            AppState.Destination = spokenText;
+//            card.setText(getString(R.string.destination_location) + " " + spokenText);
+//            mView = card.getView();
+//            adapter.notifyDataSetChanged();
+//            inputFlag = true;
+//        }
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
+
+    @Override
+    public boolean onCreatePanelMenu(int featureId, Menu menu){
+        if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS || featureId ==  Window.FEATURE_OPTIONS_PANEL) {
+            getMenuInflater().inflate(R.menu.menu_destination, menu);
+            return true;
+        }
+        return super.onCreatePanelMenu(featureId, menu);
+    }
+
+    @Override
+    public boolean onPreparePanel(int featureId, View view, Menu menu) {
+        if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS) {
+            // Dynamically decides between enabling/disabling voice menu.
+            return true;
+        }
+        // Good practice to pass through, for options menu.
+        return super.onPreparePanel(featureId, view, menu);
+    }
+
+    @Override
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS || featureId ==  Window.FEATURE_OPTIONS_PANEL ) {
+            switch (item.getItemId()) {
+                case R.id.ok:
+                    startActivity(new Intent(DestinationActivity.this, RecommendActivity.class));
+                    break;
+                case R.id.again:
+                    displaySpeechRecognizer();
+                    break;
+            }
+            return true;
+        }
+        return super.onMenuItemSelected(featureId, item);
+    }
 }

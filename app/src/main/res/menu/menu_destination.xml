@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="de.tum.in.vfit.ticketaid.activities.LocationActivity">
+    <item android:id="@+id/ok"
+        android:title="@string/ok" />
+    <item android:id="@+id/again"
+        android:title="@string/again" />
+</menu>

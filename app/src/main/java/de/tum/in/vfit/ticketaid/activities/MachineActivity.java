@@ -152,7 +152,7 @@ public class MachineActivity extends Activity {
         Card card = new Card(this);
         card.setImageLayout(Card.ImageLayout.LEFT);
         card.setText(R.string.find_machine);
-        card.addImage(R.drawable.machine);
+        card.addImage(R.drawable.mvg_machine);
         card.setTimestamp(R.string.tap_to_purchase);
         return card.getView();
     }

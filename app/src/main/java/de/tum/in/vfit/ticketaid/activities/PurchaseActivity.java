@@ -88,9 +88,9 @@ public class PurchaseActivity extends Activity {
         cards.add(3, new CardBuilder(context, CardBuilder.Layout.TITLE)
                 .addImage(R.drawable.step_4));
         cards.add(4, new CardBuilder(context, CardBuilder.Layout.TEXT)
-                .setText(R.string.get_ticket)             
+                .setText(R.string.description_ticket)
                 .addImage(R.drawable.entwerten)
-                .setFootnote("Swipe down to quit."));
+                .setTimestamp("Swipe down to exit."));
         return cards;
     }
 
@@ -131,5 +131,13 @@ public class PurchaseActivity extends Activity {
             return mGestureDetector.onMotionEvent(event);
         }
         return false;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, ThankyouActivity.class);
+        startActivity(intent);
+        super.onBackPressed();
+
     }
 }

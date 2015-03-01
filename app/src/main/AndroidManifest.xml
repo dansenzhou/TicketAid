@@ -49,6 +49,24 @@
             android:icon="@drawable/ic_glass_logo"
             android:label="@string/title_activity_destination" >
         </activity>
+        <activity
+            android:name=".activities.DescriptionActivity"
+            android:icon="@drawable/ic_glass_logo"
+            android:label="@string/title_activity_description" >
+        </activity>
+        <activity
+            android:name=".activities.ThankyouActivity"
+            android:icon="@drawable/ic_glass_logo"
+            android:label="@string/title_activity_thankyou" >
+        </activity>
+        <activity
+            android:name=".activities.RecommendActivity"
+            android:icon="@drawable/ic_glass_logo"
+            android:label="@string/title_activity_thankyou" >
+        </activity>
+        <service
+            android:name=".services.FetchAddressIntentService"
+            android:exported="false" />
     </application>
 
 </manifest>
